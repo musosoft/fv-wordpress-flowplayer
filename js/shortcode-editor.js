@@ -103,7 +103,7 @@ jQuery(function() {
 
     var fv_player_preview_window;
 
-    var fv_player_preview_loading = false;
+    var fv_player_preview_loading = {};
 
 
     var fv_wp_flowplayer_save_ignore_errors = false;
@@ -2850,7 +2850,7 @@ jQuery(function() {
         var ev2 = new Event('change', { bubbles: true});
         gutenbergTextarea.dispatchEvent(ev2,shortcode);
 
-        fv_player_editor.gutenberg_preview( jQuery(editor_button_clicked).parents('.fv-player-editor-wrapper'), shortcode );
+        fv_player_editor.gutenberg_preview( jQuery(editor_button_clicked).parents('.fv-player-gutenberg'), shortcode );
 
         // is there a plain text field together in wrapper with the button?
       } else if (field.length) {
@@ -3641,8 +3641,8 @@ jQuery(function() {
       gutenberg_preview: function( parent, shortcode ) {
         if (typeof(parent) == 'undefined' || typeof(shortcode) == 'undefined') {
           return;
-        } else if (fv_player_preview_loading !== false) {
-          clearTimeout(fv_player_preview_loading);
+        } else if ( fv_player_preview_loading[ parent[0].id ] ) {
+          clearTimeout(fv_player_preview_loading[ parent[0].id ]);
         }
 
         console.log('fv_player_gutenberg_preview',parent,shortcode);
@@ -3651,11 +3651,11 @@ jQuery(function() {
         // set timeout for the loading AJAX and wait a moment, as REACT will call this function
         // even when we click into the Gutenberg block without actually editing anything
         // and also the user might be still typing the ID (i.e. 183 - which would make 3 preview calls otherwise)
-        fv_player_preview_loading = setTimeout(function() {
+        fv_player_preview_loading[ parent[0].id ] = setTimeout(function() {
           jQuery.get(url, function(response) {
             jQuery(parent).find('.fv-player-gutenberg-preview').html( jQuery('#wrapper',response ) );
           } ).always(function() {
-            fv_player_preview_loading = false;
+            delete fv_player_preview_loading[ parent[0].id ];
           })
         }, 1500);
       },

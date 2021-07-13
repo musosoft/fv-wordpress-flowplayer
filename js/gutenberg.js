@@ -33,7 +33,7 @@
         }, 100 );
 
         function onChangeContent( newContent ) {
-          fv_player_editor.gutenberg_preview(newContent);
+          fv_player_editor.gutenberg_preview(jQuery('[data-block='+props.clientId+']'), newContent);
           props.setAttributes( { content: newContent } );
         }
         
